@@ -1,7 +1,7 @@
 const UserModel= require("../model/user")
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt')
-require ('dotenv').config();
+
 const registerUser = async (req, res) => {
     try {
         const { name, email, password, confirmpassword, phone, address,businessCategory,businessName,businessAddress } = req.body;
@@ -97,66 +97,51 @@ const loginUser = async (req, res) => {
 };
 const registerUserweb = async (req, res) => {
     try {
-        const { name, email, password, confirmpassword, phone, address,businessCategory,businessName,businessAddress } = req.body;
+        const { name, email, password, confirmpassword, phone, address, businessCategory, businessName, businessAddress } = req.body;
 
-        // Validate required fields
         if (!name || !email || !password || !confirmpassword || !phone || !address) {
-            return res.status(400).send({
-                success: false,
-                message: "Please fill all the fields",
-            });
+            return res.status(400).send({ success: false, message: "Please fill all the fields" });
         }
 
-        // Check if passwords match
         if (password !== confirmpassword) {
-            return res.status(400).send({
-                success: false,
-                message: "Password and Confirm Password don't match",
-            });
+            return res.status(400).send({ success: false, message: "Password and Confirm Password don't match" });
         }
 
-        // Check if the email already exists
         const userExist = await UserModel.findOne({ email: email });
         if (userExist) {
-            return res.status(400).send({
-                success: false,
-                message: "Email already exists",
-            });
+            return res.status(400).send({ success: false, message: "Email already exists" });
         }
 
-        // Hash the password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // Create a new user
         const user = new UserModel({
             name,
             email,
-            password: hashedPassword, // Store hashed password
+            password: hashedPassword,
             phone,
             address,
-            businessCategory,businessName,businessAddress
+            businessCategory,
+            businessName,
+            businessAddress
         });
 
-        // Save the user to the database
+        console.log("JWT_SECRET:", process.env.JWT_SECRET);
+        if (!process.env.JWT_SECRET) {
+            throw new Error("JWT_SECRET environment variable is not defined");
+        }
+
         await user.save();
-        const token = jwt.sign(
-            { id: user._id, },
-            process.env.JWT_SECRET,
-            { expiresIn: "24h" } 
-        );
+
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "24h" });
         res.cookie("token", token, {
-            httpOnly: true, 
-            secure: process.env.NODE_ENV === "production", 
-            sameSite: "lax",
+            
         });
-        return res.status(200).send({
-            success: true,
-            message: "User registered successfully",
-            user: user
-        });
+
+        return res.status(200).send({ success: true, message: "User registered successfully", user: user });
 
     } catch (error) {
+        console.log(error);
         return res.status(500).send({
             success: false,
             message: "An error occurred during registration",
@@ -164,6 +149,7 @@ const registerUserweb = async (req, res) => {
         });
     }
 };
+
 const loginUserweb = async (req, res) => {
     try {
         const { phone, password } = req.body;
