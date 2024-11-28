@@ -8,14 +8,12 @@ dotenv.config()
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-app.use(cors({ 
-    origin: ["https://ess-frontend-eight.vercel.app"],
-    methods: ["GET", "POST","DELETE","PUT"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-}));
+const corsOptions = {
+    origin: 'https://ess-frontend-eight.vercel.app', // Replace with the client URL
+    credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+};
+app.use(cors(corsOptions))
 app.use(express.json());
-
 app.use(cookieParser());
 app.use(express.json());
 app.use(bodyParser.json());

@@ -134,13 +134,12 @@ const registerUserweb = async (req, res) => {
         await user.save();
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "24h" });
-        res.cookie("token", token, {
-            httpOnly:true,
-            secure:true,
-            sameSite:"none",
-            maxAge: 24 * 60 * 60 * 1000 
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',  // Set to 'true' in production
+            sameSite: 'None', // Adjust as necessary
+            maxAge: 3600000 // 1 hour
         });
-
         return res.status(200).send({ success: true, message: "User registered successfully", user: user });
 
     } catch (error) {
@@ -182,11 +181,11 @@ const loginUserweb = async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: "24h" } 
         );
-        res.cookie("token", token, {
-            httpOnly:true,
-            secure:true,
-            sameSite:"none",
-            maxAge: 24 * 60 * 60 * 1000 
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',  // Set to 'true' in production
+            sameSite: 'None', // Adjust as necessary
+            maxAge: 3600000 // 1 hour
         });
         return res.status(200).json({
             success: true,
