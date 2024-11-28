@@ -9,10 +9,10 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const corsOptions = {
-    origin: 'https://ess-frontend-eight.vercel.app', // Replace with the client URL
-    credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+    origin: 'https://ess-frontend-eight.vercel.app', // Client URL
+    credentials: true, // Allow credentials (cookies, headers, etc.)
 };
-app.use(cors(corsOptions))
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.json());

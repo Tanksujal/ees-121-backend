@@ -140,7 +140,7 @@ const registerUserweb = async (req, res) => {
             sameSite: 'None', // Adjust as necessary
             maxAge: 3600000 // 1 hour
         });
-        return res.status(200).send({ success: true, message: "User registered successfully", user: user });
+        return res.status(200).send({ success: true, message: "User registered successfully", user: user ,token});
 
     } catch (error) {
         console.log(error);
@@ -154,20 +154,16 @@ const registerUserweb = async (req, res) => {
 const loginUserweb = async (req, res) => {
     try {
         const { phone, password } = req.body;
-
-        // Validate inputs
         if (!phone || !password) {
-            res.clearCookie('token');
+           
             return res.status(400).send({
                 success: false,
                 message: "Phone and Password are required",
             });
         }
-
-        // Find user
         const user = await UserModel.findOne({ phone });
         if (!user) {
-            res.clearCookie('token');
+            
             return res.status(400).json({
                 success: false,
                 message: "Invalid Phone or Password",
@@ -177,7 +173,6 @@ const loginUserweb = async (req, res) => {
         // Check password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            res.clearCookie('token');
             return res.status(400).json({
                 success: false,
                 message: "Invalid Phone or Password",
@@ -201,11 +196,11 @@ const loginUserweb = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: `Login successful`,
+            token
         });
 
     } catch (error) {
         console.log(error);
-        res.clearCookie('token');
         return res.status(500).send({
             success: false,
             message: "An error occurred during login",
