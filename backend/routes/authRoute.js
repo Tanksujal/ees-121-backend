@@ -7,7 +7,7 @@ router.post('/loginUser',loginUser);
 router.post('/registerUserweb',registerUserweb)
 router.post('/loginUserweb',loginUserweb)
 router.get('/getAdmin',isAdmin,getAdmin)
-router.get('/getAllUser',verifyToken,getalluser)
+router.get('/getAllUser',getalluser)
 router.get('/getUser',verifyToken,getUser)
 router.get('/logout',logout)
 module.exports = router
