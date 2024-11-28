@@ -151,42 +151,53 @@ const registerUserweb = async (req, res) => {
         });
     }
 };
-
 const loginUserweb = async (req, res) => {
     try {
         const { phone, password } = req.body;
+
+        // Validate inputs
         if (!phone || !password) {
+            res.clearCookie('token');
             return res.status(400).send({
                 success: false,
                 message: "Phone and Password are required",
             });
         }
+
+        // Find user
         const user = await UserModel.findOne({ phone });
         if (!user) {
+            res.clearCookie('token');
             return res.status(400).json({
                 success: false,
                 message: "Invalid Phone or Password",
             });
         }
 
+        // Check password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
+            res.clearCookie('token');
             return res.status(400).json({
                 success: false,
                 message: "Invalid Phone or Password",
             });
         }
+
+        // Generate token and set cookie
         const token = jwt.sign(
-            { id: user._id, user:user},
+            { id: user._id, user },
             process.env.JWT_SECRET,
-            { expiresIn: "24h" } 
+            { expiresIn: "24h" }
         );
-        res.cookie('token', token, {
+
+        res.cookie("refreshToken", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',  // Set to 'true' in production
-            sameSite: 'None', // Adjust as necessary
-            maxAge: 3600000 // 1 hour
+            sameSite: "None",
+            secure: true,
+            maxAge: 3 * 60 * 60 * 1000 // 3 hours in milliseconds
         });
+
         return res.status(200).json({
             success: true,
             message: `Login successful`,
@@ -194,6 +205,7 @@ const loginUserweb = async (req, res) => {
 
     } catch (error) {
         console.log(error);
+        res.clearCookie('token');
         return res.status(500).send({
             success: false,
             message: "An error occurred during login",
@@ -201,6 +213,7 @@ const loginUserweb = async (req, res) => {
         });
     }
 };
+
 const getAdmin = async(req,res) => {
     try {
         res.status(200).send({
