@@ -335,5 +335,80 @@ const updateProfile = async (req, res) => {
         });
     }
 };
+const deleteUser = async(req,res) => {
+    try {
+       const userId = req.body.id
+       const user = await UserModel.findByIdAndDelete(userId)
+       if(!user){
+        return res.status(404).send
+        ({
+            success: false
+            ,message: "User not found"
+        })
+            }
+            return res.status(200).send
+            ({
+                success: true
+                ,message: "User deleted successfully"
+                })
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({
+            success: false,
+            message: "An error occurred while updating the profile",
+            error: error.message,
+        });
+    }
+}
+const UpdateUser = async(req,res) => {
+    try {
+        const userId = req.body; // Assuming the user's ID is stored in `req.user` after authentication middleware
+        const { name, email, phone, address, businessCategory, businessName, businessAddress } = req.body;
 
-module.exports = { registerUser, loginUser,registerUserweb,registerUserweb,loginUserweb,getalluser,getUser,logout,getAdmin,updateProfile}
+        // Validate inputs
+        if (!name && !email && !phone && !address && !businessCategory && !businessName && !businessAddress) {
+            return res.status(400).send({
+                success: false,
+                message: "No fields to update provided",
+            });
+        }
+
+        // Prepare the update object
+        const updatedFields = {};
+        if (name) updatedFields.name = name;
+        if (email) updatedFields.email = email;
+        if (phone) updatedFields.phone = phone;
+        if (address) updatedFields.address = address;
+        if (businessCategory) updatedFields.businessCategory = businessCategory;
+        if (businessName) updatedFields.businessName = businessName;
+        if (businessAddress) updatedFields.businessAddress = businessAddress;
+
+        // Update user data in the database
+        const updatedUser = await UserModel.findByIdAndUpdate(
+            userId,
+            { $set: updatedFields },
+            { new: true, runValidators: true } // `new: true` returns the updated document
+        );
+
+        if (!updatedUser) {
+            return res.status(404).send({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        return res.status(200).send({
+            success: true,
+            message: "Profile updated successfully",
+            user: updatedUser,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({
+            success: false,
+            message: "An error occurred while updating the profile",
+            error: error.message,
+        });
+    }
+}
+module.exports = { registerUser, loginUser,registerUserweb,registerUserweb,loginUserweb,getalluser,getUser,logout,getAdmin,updateProfile,deleteUser,UpdateUser}
