@@ -6,7 +6,7 @@ router.post('/registerUser',registerUser);
 router.post('/loginUser',loginUser);
 router.post('/registerUserweb',registerUserweb)
 router.post('/loginUserweb',loginUserweb)
-router.post('/updateProfile',updateProfile)
+router.post('/updateProfile',verifyToken,updateProfile)
 router.get('/getAdmin',isAdmin,getAdmin)
 router.get('/getAllUser',getalluser)
 router.get('/getUser',verifyToken,getUser)
