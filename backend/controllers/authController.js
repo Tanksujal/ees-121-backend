@@ -362,7 +362,7 @@ const deleteUser = async(req,res) => {
 }
 const UpdateUser = async(req,res) => {
     try {
-        const userId = req.body; // Assuming the user's ID is stored in `req.user` after authentication middleware
+        const userId = req.body.id; // Assuming the user's ID is stored in `req.user` after authentication middleware
         const { name, email, phone, address, businessCategory, businessName, businessAddress } = req.body;
 
         // Validate inputs
