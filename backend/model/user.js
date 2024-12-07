@@ -14,12 +14,30 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  profilePic : {
-    type:String,
+  profilePic: {
+    type: String,
   },
   address: {
-    type: String,
-    required: true,
+    area: {
+      type: String,
+      required: true,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    state: {
+      type: String,
+      required: true,
+    },
+    country: {
+      type: String,
+      required: true,
+    },
+    pincode: {
+      type: String,
+      required: true,
+    },
   },
   password: {
     type: String,
