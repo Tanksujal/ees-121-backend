@@ -3,15 +3,35 @@ require ("dotenv").config();
 const verifyToken = async (req, res, next) => {
     try {
         const token = req.headers.authorization || req.cookies.token;
+        // console.log(token);
+       
         if (!token) {
             return res.status(401).send({
                 success: false,
                 message: "Access denied. No token provided.",
             });
         }
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-        next();
+        newtoken = token.slice(7);
+        console.log(newtoken);
+       
+      jwt.verify(newtoken,process.env.JWT_SECRET, (err, user) => {
+            if(err){
+                console.log(err ,"err");
+               
+            }
+            if (err) return res.status(403).send({
+                success: false,
+                message: "Invalid token"
+            });
+   
+            console.log(user ," users");
+           
+            req.user = user;
+           
+            next();
+        })
+       
+       
     } catch (error) {
         return res.status(403).send({
             success: false,
