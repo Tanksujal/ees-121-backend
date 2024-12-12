@@ -21,19 +21,32 @@ const sentRequest = async (req, res) => {
             });
         }
 
-        // Update the sender's `sended_requests` array
+        // Fetch the complete user data for sender and receiver
+        const sender = await User.findById(senderId);
+        const receiver = await User.findById(receiverId);
+console.log(receiver);
+
+        if (!sender || !receiver) {
+            return res.status(404).send({
+                success: false,
+                message: "Sender or receiver not found.",
+            });
+        }
+
+        // Update the sender's `sended_requests` array with the receiver's full data
         await User.findByIdAndUpdate(senderId, {
-            $addToSet: { sended_requests: { user: receiverId } }, // Prevent duplicates
+            $addToSet: { sended_requests: { user: receiver } }, // Prevent duplicates
         });
 
-        // Update the receiver's `received_requests` array
+        // Update the receiver's `received_requests` array with the sender's full data
         await User.findByIdAndUpdate(receiverId, {
-            $addToSet: { received_requests: { user: senderId } }, // Prevent duplicates
+            $addToSet: { received_requests: { user: sender } }, // Prevent duplicates
         });
 
         return res.status(200).send({
             success: true,
             message: "Request sent successfully.",
+            sender,receiver
         });
     } catch (error) {
         console.error(error);
@@ -44,14 +57,15 @@ const sentRequest = async (req, res) => {
         });
     }
 };
+
 const getUserRequests = async (req, res) => {
     try {
         const userId = req.user.id; // Assuming authenticated user ID is attached to req.user
 
         // Find user by ID and populate requests
         const user = await User.findById(userId)
-            .populate('sended_requests.user', 'name email') // Populate details of sent requests
-            .populate('received_requests.user', 'name email'); // Populate details of received requests
+            .populate('sended_requests') // Populate details of sent requests
+            .populate('received_requests'); // Populate details of received requests
 
         if (!user) {
             return res.status(404).send({

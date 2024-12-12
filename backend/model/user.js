@@ -59,27 +59,28 @@ const userSchema = new mongoose.Schema({
   sended_requests: [
     {
       user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', // Reference to the User model
+        type: Object, // Store the entire user document
+        required: true,
       },
       date: {
         type: Date,
         default: Date.now,
       },
     },
-  ],
-  received_requests: [
+],
+received_requests: [
     {
       user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', // Reference to the User model
+        type: Object, // Store the entire user document
+        required: true,
       },
       date: {
         type: Date,
         default: Date.now,
       },
     },
-  ],
+],
+
 }, { timestamps: true }); // Adds createdAt and updatedAt fields
 
 module.exports = mongoose.model('User', userSchema);
