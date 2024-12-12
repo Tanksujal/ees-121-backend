@@ -604,7 +604,7 @@ const UpdateUser = async (req, res) => {
         error: error.message,
       });
     }
-  };
+};
   
   
 module.exports = { registerUser, loginUser,registerUserweb,registerUserweb,loginUserweb,getalluser,getUser,logout,getAdmin,updateProfile,deleteUser,UpdateUser}
